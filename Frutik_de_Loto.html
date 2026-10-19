@@ -1,0 +1,755 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#176b4d">
+<title>Frutik de Loto | Ganancias diarias</title>
+<script src="https://cdn.tailwindcss.com"></script>
+<link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+<style>
+  :root {
+    --green: #176b4d;
+    --green2: #21845e;
+    --bg: #f4f7f3;
+    --card: #ffffff;
+    --text: #17231c;
+    --muted: #6c786f;
+    --line: #e2e9e2;
+    --red: #b93838;
+    --gold: #f2bd4b;
+  }
+  body {
+    margin: 0;
+    background: var(--bg);
+    color: var(--text);
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+  }
+  .modal-backdrop {
+    background-color: rgba(0, 0, 0, 0.4);
+    backdrop-filter: blur(3px);
+  }
+  .animate-fadeIn {
+    animation: fadeIn 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+  }
+  @keyframes fadeIn {
+    from { opacity: 0; transform: translateY(6px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+</style>
+</head>
+<body class="min-h-screen pb-12">
+
+<!-- Encabezado -->
+<header class="bg-gradient-to-br from-[#14563f] to-[#21845e] text-white pt-6 pb-8 px-4 rounded-b-3xl shadow-md">
+  <div class="max-w-3xl mx-auto flex items-center justify-between">
+    <div class="flex items-center gap-3">
+      <div class="w-12 h-12 rounded-2xl bg-white/20 flex items-center justify-center text-2xl shadow-inner">
+        🍉
+      </div>
+      <div>
+        <h1 class="text-2xl font-extrabold tracking-tight">Frutik de Loto</h1>
+        <p class="text-emerald-100 text-xs font-medium">Control de ventas, gastos y ganancias</p>
+      </div>
+    </div>
+    <div class="text-right">
+      <span class="text-xs bg-emerald-800/60 text-emerald-100 px-3 py-1 rounded-full border border-emerald-500/30 font-medium shadow-sm">
+        Costa Rica (₡)
+      </span>
+    </div>
+  </div>
+</header>
+
+<main class="max-w-3xl mx-auto px-3 sm:px-4 -mt-3">
+  <!-- Navegación por fechas -->
+  <div class="bg-white rounded-2xl p-4 border border-[#e2e9e2] shadow-sm mb-4">
+    <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+      <div>
+        <span class="text-xs font-bold uppercase tracking-wider text-emerald-800">Fecha de Registro</span>
+        <div class="flex items-center gap-2 mt-1">
+          <input id="day" type="date" class="font-bold text-gray-800 border border-gray-200 rounded-xl px-3 py-1.5 focus:ring-2 focus:ring-emerald-500 outline-none">
+        </div>
+      </div>
+      <div class="flex items-center gap-1.5 self-end sm:self-center">
+        <button id="prevDayBtn" type="button" class="px-3 py-1.5 bg-gray-100 hover:bg-gray-200 text-gray-700 text-xs font-semibold rounded-xl transition flex items-center gap-1">
+          <i class="fa-solid fa-chevron-left"></i> Ayer
+        </button>
+        <button id="todayBtn" type="button" class="px-3 py-1.5 bg-emerald-100 hover:bg-emerald-200 text-emerald-800 text-xs font-bold rounded-xl transition">
+          Hoy
+        </button>
+        <button id="nextDayBtn" type="button" class="px-3 py-1.5 bg-gray-100 hover:bg-gray-200 text-gray-700 text-xs font-semibold rounded-xl transition flex items-center gap-1">
+          Mañana <i class="fa-solid fa-chevron-right"></i>
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Estadísticas del Día -->
+  <section class="grid grid-cols-2 md:grid-cols-4 gap-2.5 mb-4" aria-live="polite">
+    <div class="bg-white border border-[#e2e9e2] rounded-2xl p-3.5 shadow-sm">
+      <div class="text-xs font-semibold text-gray-500 flex items-center justify-between">
+        Ventas <i class="fa-solid fa-arrow-trend-up text-emerald-600"></i>
+      </div>
+      <div class="text-lg sm:text-xl font-black text-gray-800 mt-1 truncate" id="salesTotal">₡0</div>
+    </div>
+    <div class="bg-white border border-[#e2e9e2] rounded-2xl p-3.5 shadow-sm">
+      <div class="text-xs font-semibold text-gray-500 flex items-center justify-between">
+        Gastos <i class="fa-solid fa-arrow-trend-down text-rose-500"></i>
+      </div>
+      <div class="text-lg sm:text-xl font-black text-gray-800 mt-1 truncate" id="expensesTotal">₡0</div>
+    </div>
+    <div class="bg-emerald-50 border border-emerald-200 rounded-2xl p-3.5 shadow-sm">
+      <div class="text-xs font-bold text-emerald-800 flex items-center justify-between">
+        Ganancia Neto <i class="fa-solid fa-wallet text-emerald-700"></i>
+      </div>
+      <div class="text-lg sm:text-xl font-black text-emerald-800 mt-1 truncate" id="profitTotal">₡0</div>
+    </div>
+    <div class="bg-white border border-[#e2e9e2] rounded-2xl p-3.5 shadow-sm">
+      <div class="text-xs font-semibold text-gray-500 flex items-center justify-between">
+        Nº Registros <i class="fa-solid fa-receipt text-amber-500"></i>
+      </div>
+      <div class="text-lg sm:text-xl font-black text-gray-800 mt-1" id="salesCount">0</div>
+    </div>
+  </section>
+
+  <!-- Meta diaria -->
+  <section class="bg-white border border-[#e2e9e2] rounded-2xl p-4 shadow-sm mb-4">
+    <div class="flex justify-between items-center mb-2">
+      <div class="flex items-center gap-2">
+        <i class="fa-solid fa-bullseye text-amber-500"></i>
+        <span class="text-xs font-bold uppercase tracking-wider text-gray-600">Meta del Día</span>
+      </div>
+      <button id="setGoalBtn" class="text-xs text-emerald-700 hover:underline font-semibold">Configurar meta</button>
+    </div>
+    <div class="w-full bg-gray-100 rounded-full h-3 overflow-hidden border border-gray-200">
+      <div id="goalProgressBar" class="bg-gradient-to-r from-emerald-500 to-teal-400 h-full w-0 transition-all duration-500"></div>
+    </div>
+    <div class="flex justify-between items-center text-xs text-gray-500 mt-1.5 font-medium">
+      <span id="goalProgressText">0% completado</span>
+      <span id="goalTargetText">Meta: ₡20,000</span>
+    </div>
+  </section>
+
+  <!-- Pestañas de Vista -->
+  <div class="flex border-b border-gray-200 mb-4 bg-white rounded-xl p-1 shadow-sm">
+    <button id="tabDaily" class="flex-1 py-2 text-center text-xs font-bold rounded-lg bg-emerald-700 text-white transition">
+      <i class="fa-solid fa-calendar-day mr-1"></i> Registro Diario
+    </button>
+    <button id="tabMonthly" class="flex-1 py-2 text-center text-xs font-semibold text-gray-600 hover:text-emerald-800 rounded-lg transition">
+      <i class="fa-solid fa-chart-pie mr-1"></i> Resumen del Mes
+    </button>
+  </div>
+
+  <!-- SECCIÓN DIARIA -->
+  <div id="dailyView">
+    <!-- Formulario Registrar Venta -->
+    <section class="bg-white border border-[#e2e9e2] rounded-2xl p-4 shadow-sm mb-4">
+      <h2 class="text-base font-bold text-gray-800 mb-3 flex items-center gap-2">
+        <span class="text-xl">🧾</span> Registrar una venta
+      </h2>
+      <form id="saleForm" class="space-y-3">
+        <div>
+          <label for="saleProduct" class="block text-xs font-semibold text-gray-600 mb-1">Producto</label>
+          <input id="saleProduct" maxlength="70" placeholder="Ej. Taza de frutas con chamoy, Porción grande" required class="w-full border border-gray-200 rounded-xl p-2.5 text-sm focus:ring-2 focus:ring-emerald-500 outline-none">
+        </div>
+        <div class="grid grid-cols-2 gap-3">
+          <div>
+            <label for="saleQty" class="block text-xs font-semibold text-gray-600 mb-1">Cantidad</label>
+            <input id="saleQty" type="number" min="1" step="1" value="1" required class="w-full border border-gray-200 rounded-xl p-2.5 text-sm focus:ring-2 focus:ring-emerald-500 outline-none">
+          </div>
+          <div>
+            <label for="salePrice" class="block text-xs font-semibold text-gray-600 mb-1">Precio por unidad (₡)</label>
+            <input id="salePrice" type="number" min="0" step="1" inputmode="numeric" placeholder="Ej. 1000" required class="w-full border border-gray-200 rounded-xl p-2.5 text-sm focus:ring-2 focus:ring-emerald-500 outline-none">
+          </div>
+        </div>
+        <div>
+          <label for="saleNote" class="block text-xs font-semibold text-gray-600 mb-1">Nota (opcional)</label>
+          <input id="saleNote" maxlength="100" placeholder="Ej. Pagó con SINPE móvil" class="w-full border border-gray-200 rounded-xl p-2.5 text-sm focus:ring-2 focus:ring-emerald-500 outline-none">
+        </div>
+        <button type="submit" class="w-full bg-emerald-700 hover:bg-emerald-800 active:bg-emerald-900 text-white font-bold py-3 px-4 rounded-xl shadow transition duration-150 flex items-center justify-center gap-2">
+          <i class="fa-solid fa-plus"></i> Guardar venta
+        </button>
+      </form>
+    </section>
+
+    <!-- Lista de Ventas -->
+    <section class="bg-white border border-[#e2e9e2] rounded-2xl p-4 shadow-sm mb-4">
+      <div class="flex justify-between items-center mb-3">
+        <h2 class="text-base font-bold text-gray-800 flex items-center gap-2">
+          <span>📋</span> Ventas del día
+        </h2>
+        <span class="text-xs bg-gray-100 text-gray-600 px-2.5 py-1 rounded-full font-medium" id="salesListCount">0 registros</span>
+      </div>
+      <div class="space-y-2.5" id="salesList">
+        <div class="text-center py-6 text-sm text-gray-400">Todavía no hay ventas registradas.</div>
+      </div>
+    </section>
+
+    <!-- Formulario Registrar Gasto -->
+    <section class="bg-white border border-[#e2e9e2] rounded-2xl p-4 shadow-sm mb-4">
+      <h2 class="text-base font-bold text-gray-800 mb-3 flex items-center gap-2">
+        <span class="text-xl">🛒</span> Registrar un gasto
+      </h2>
+      <form id="expenseForm" class="space-y-3">
+        <div>
+          <label for="expenseName" class="block text-xs font-semibold text-gray-600 mb-1">¿En qué gastaste?</label>
+          <input id="expenseName" maxlength="70" placeholder="Ej. Frutas, vasos, chamoy, hielo" required class="w-full border border-gray-200 rounded-xl p-2.5 text-sm focus:ring-2 focus:ring-emerald-500 outline-none">
+        </div>
+        <div>
+          <label for="expenseAmount" class="block text-xs font-semibold text-gray-600 mb-1">Monto (₡)</label>
+          <input id="expenseAmount" type="number" min="1" step="1" inputmode="numeric" placeholder="Ej. 4500" required class="w-full border border-gray-200 rounded-xl p-2.5 text-sm focus:ring-2 focus:ring-emerald-500 outline-none">
+        </div>
+        <button type="submit" class="w-full bg-emerald-700 hover:bg-emerald-800 active:bg-emerald-900 text-white font-bold py-3 px-4 rounded-xl shadow transition duration-150 flex items-center justify-center gap-2">
+          <i class="fa-solid fa-plus"></i> Guardar gasto
+        </button>
+      </form>
+
+      <div class="my-4 border-t border-gray-100"></div>
+
+      <div class="flex justify-between items-center mb-3">
+        <h2 class="text-sm font-bold text-gray-800">Gastos del día</h2>
+        <span class="text-xs bg-gray-100 text-gray-600 px-2.5 py-1 rounded-full font-medium" id="expenseListCount">0 registros</span>
+      </div>
+      <div class="space-y-2.5" id="expensesList">
+        <div class="text-center py-6 text-sm text-gray-400">Todavía no hay gastos registrados.</div>
+      </div>
+
+      <div class="flex justify-between items-center bg-amber-50 border border-amber-200 p-3 rounded-xl mt-4 text-amber-900 font-bold text-sm">
+        <span>Total de gastos:</span>
+        <span id="expenseFooterTotal" class="text-base text-amber-900">₡0</span>
+      </div>
+    </section>
+
+    <!-- Cierre del Día y Opciones -->
+    <section class="bg-white border border-[#e2e9e2] rounded-2xl p-4 shadow-sm mb-4">
+      <h2 class="text-base font-bold text-gray-800 mb-1 flex items-center gap-2">
+        <span>📊</span> Acciones y Reporte
+      </h2>
+      <p class="text-xs text-gray-500 mb-4">Exporta tus datos para llevar control externo o comparte el resumen diario directamente por mensaje.</p>
+      
+      <div class="grid grid-cols-1 sm:grid-cols-2 gap-2 mb-4">
+        <button id="exportBtn" type="button" class="bg-emerald-50 hover:bg-emerald-100 text-emerald-800 font-semibold py-2.5 px-3 rounded-xl border border-emerald-200 transition text-xs flex items-center justify-center gap-2">
+          <i class="fa-solid fa-file-csv text-sm"></i> Descargar Reporte CSV
+        </button>
+        <button id="shareBtn" type="button" class="bg-emerald-50 hover:bg-emerald-100 text-emerald-800 font-semibold py-2.5 px-3 rounded-xl border border-emerald-200 transition text-xs flex items-center justify-center gap-2">
+          <i class="fa-solid fa-share-nodes text-sm"></i> Compartir Resumen
+        </button>
+      </div>
+
+      <div class="border-t border-gray-100 pt-3">
+        <button id="clearDayBtn" type="button" class="w-full bg-rose-50 hover:bg-rose-100 text-rose-700 font-semibold py-2.5 px-3 rounded-xl border border-rose-200 transition text-xs flex items-center justify-center gap-2">
+          <i class="fa-solid fa-trash-can"></i> Borrar registros de esta fecha
+        </button>
+      </div>
+    </section>
+  </div>
+
+  <!-- SECCIÓN MENSUAL -->
+  <div id="monthlyView" class="hidden">
+    <section class="bg-white border border-[#e2e9e2] rounded-2xl p-4 shadow-sm mb-4">
+      <div class="flex items-center justify-between mb-4">
+        <h2 class="text-base font-bold text-gray-800">Acumulado del Mes</h2>
+        <input id="monthPicker" type="month" class="text-xs font-bold text-gray-700 border border-gray-200 rounded-xl px-2.5 py-1.5 outline-none">
+      </div>
+
+      <div class="grid grid-cols-3 gap-2 text-center mb-4">
+        <div class="bg-gray-50 p-2.5 rounded-xl border border-gray-100">
+          <span class="text-[10px] text-gray-500 font-bold uppercase block">Ventas</span>
+          <span id="monthSalesTotal" class="text-sm font-extrabold text-gray-800">₡0</span>
+        </div>
+        <div class="bg-gray-50 p-2.5 rounded-xl border border-gray-100">
+          <span class="text-[10px] text-gray-500 font-bold uppercase block">Gastos</span>
+          <span id="monthExpensesTotal" class="text-sm font-extrabold text-rose-600">₡0</span>
+        </div>
+        <div class="bg-emerald-50 p-2.5 rounded-xl border border-emerald-100">
+          <span class="text-[10px] text-emerald-800 font-bold uppercase block">Ganancia</span>
+          <span id="monthProfitTotal" class="text-sm font-extrabold text-emerald-800">₡0</span>
+        </div>
+      </div>
+
+      <h3 class="text-xs font-bold text-gray-500 uppercase tracking-wider mb-2">Desglose Diario</h3>
+      <div id="monthlyBreakdown" class="space-y-2 max-h-80 overflow-y-auto pr-1">
+        <!-- Render dinámico -->
+      </div>
+    </section>
+  </div>
+
+  <p class="text-xs text-gray-400 text-center mt-6">
+    Tus datos se guardan en el navegador de este dispositivo.
+  </p>
+</main>
+
+<!-- MODAL EDICIÓN DE VENTA -->
+<div id="editSaleModal" class="fixed inset-0 modal-backdrop z-50 flex items-center justify-center p-4 hidden animate-fadeIn">
+  <div class="bg-white rounded-2xl max-w-sm w-full p-5 shadow-2xl border border-gray-100">
+    <h3 class="text-base font-bold text-gray-800 mb-3">Editar Venta</h3>
+    <form id="editSaleForm" class="space-y-3">
+      <input type="hidden" id="editSaleIndex">
+      <div>
+        <label class="block text-xs font-semibold text-gray-600 mb-1">Producto</label>
+        <input id="editSaleProduct" required class="w-full border border-gray-200 rounded-xl p-2.5 text-sm outline-none focus:ring-2 focus:ring-emerald-500">
+      </div>
+      <div class="grid grid-cols-2 gap-2">
+        <div>
+          <label class="block text-xs font-semibold text-gray-600 mb-1">Cantidad</label>
+          <input id="editSaleQty" type="number" min="1" required class="w-full border border-gray-200 rounded-xl p-2.5 text-sm outline-none focus:ring-2 focus:ring-emerald-500">
+        </div>
+        <div>
+          <label class="block text-xs font-semibold text-gray-600 mb-1">Precio Unit. (₡)</label>
+          <input id="editSalePrice" type="number" min="0" required class="w-full border border-gray-200 rounded-xl p-2.5 text-sm outline-none focus:ring-2 focus:ring-emerald-500">
+        </div>
+      </div>
+      <div>
+        <label class="block text-xs font-semibold text-gray-600 mb-1">Nota</label>
+        <input id="editSaleNote" class="w-full border border-gray-200 rounded-xl p-2.5 text-sm outline-none focus:ring-2 focus:ring-emerald-500">
+      </div>
+      <div class="flex gap-2 pt-2">
+        <button type="button" onclick="closeModal('editSaleModal')" class="flex-1 bg-gray-100 text-gray-700 py-2 rounded-xl font-bold text-xs">Cancelar</button>
+        <button type="submit" class="flex-1 bg-emerald-700 text-white py-2 rounded-xl font-bold text-xs">Guardar Cambios</button>
+      </div>
+    </form>
+  </div>
+</div>
+
+<!-- MODAL EDICIÓN DE GASTO -->
+<div id="editExpenseModal" class="fixed inset-0 modal-backdrop z-50 flex items-center justify-center p-4 hidden animate-fadeIn">
+  <div class="bg-white rounded-2xl max-w-sm w-full p-5 shadow-2xl border border-gray-100">
+    <h3 class="text-base font-bold text-gray-800 mb-3">Editar Gasto</h3>
+    <form id="editExpenseForm" class="space-y-3">
+      <input type="hidden" id="editExpenseIndex">
+      <div>
+        <label class="block text-xs font-semibold text-gray-600 mb-1">Concepto</label>
+        <input id="editExpenseName" required class="w-full border border-gray-200 rounded-xl p-2.5 text-sm outline-none focus:ring-2 focus:ring-emerald-500">
+      </div>
+      <div>
+        <label class="block text-xs font-semibold text-gray-600 mb-1">Monto (₡)</label>
+        <input id="editExpenseAmount" type="number" min="1" required class="w-full border border-gray-200 rounded-xl p-2.5 text-sm outline-none focus:ring-2 focus:ring-emerald-500">
+      </div>
+      <div class="flex gap-2 pt-2">
+        <button type="button" onclick="closeModal('editExpenseModal')" class="flex-1 bg-gray-100 text-gray-700 py-2 rounded-xl font-bold text-xs">Cancelar</button>
+        <button type="submit" class="flex-1 bg-emerald-700 text-white py-2 rounded-xl font-bold text-xs">Guardar Cambios</button>
+      </div>
+    </form>
+  </div>
+</div>
+
+<!-- MODAL CONFIRMACIÓN BORRAR -->
+<div id="confirmModal" class="fixed inset-0 modal-backdrop z-50 flex items-center justify-center p-4 hidden animate-fadeIn">
+  <div class="bg-white rounded-2xl max-w-xs w-full p-5 shadow-2xl text-center border border-gray-100">
+    <div class="w-12 h-12 rounded-full bg-rose-100 text-rose-600 flex items-center justify-center mx-auto mb-3 text-xl">
+      <i class="fa-solid fa-triangle-exclamation"></i>
+    </div>
+    <h3 class="text-base font-bold text-gray-800 mb-1" id="confirmTitle">¿Eliminar registro?</h3>
+    <p class="text-xs text-gray-500 mb-4" id="confirmMsg">Esta acción no se puede deshacer.</p>
+    <div class="flex gap-2">
+      <button type="button" id="confirmCancelBtn" class="flex-1 bg-gray-100 text-gray-700 py-2 rounded-xl font-bold text-xs">Cancelar</button>
+      <button type="button" id="confirmOkBtn" class="flex-1 bg-rose-600 text-white py-2 rounded-xl font-bold text-xs">Confirmar</button>
+    </div>
+  </div>
+</div>
+
+<script>
+(function(){
+  const $ = id => document.getElementById(id);
+  const storageKey = 'frutikDeLoto_daily_v2';
+  
+  // Utilidad para formatear fechas locales YYYY-MM-DD
+  function getLocalDateString(d = new Date()) {
+    const year = d.getFullYear();
+    const month = String(d.getMonth() + 1).padStart(2, '0');
+    const day = String(d.getDate()).padStart(2, '0');
+    return `${year}-${month}-${day}`;
+  }
+
+  // Configuración Inicial de Fecha
+  $('day').value = getLocalDateString();
+  
+  let db = {};
+  try { db = JSON.parse(localStorage.getItem(storageKey) || '{}'); } catch(e) { db = {}; }
+  if(!db.goals) db.goals = {};
+
+  function dayData(dateStr = $('day').value){ 
+    if(!db[dateStr]) db[dateStr] = {sales:[], expenses:[]}; 
+    return db[dateStr]; 
+  }
+
+  function save(){ 
+    try { 
+      localStorage.setItem(storageKey, JSON.stringify(db)); 
+    } catch(e) { 
+      toast('No se pudieron guardar los datos.'); 
+    } 
+  }
+
+  // Formateador CRC impecable
+  function crc(n){ 
+    return new Intl.NumberFormat('es-CR', { style: 'currency', currency: 'CRC', maximumFractionDigits: 0 })
+      .format(n || 0)
+      .replace(/\s+/g, ' '); 
+  }
+
+  function escapeHtml(s){ 
+    return String(s).replace(/[&<>"']/g, c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c])); 
+  }
+
+  function toast(msg){ 
+    const old = $('toast'); 
+    if(old) old.remove(); 
+    const el = document.createElement('div');
+    el.id = 'toast';
+    el.className = 'fixed bottom-4 left-1/2 -translate-x-1/2 bg-gray-900 text-white text-xs py-2 px-4 rounded-xl shadow-lg z-50 animate-fadeIn';
+    el.textContent = msg;
+    document.body.appendChild(el);
+    setTimeout(() => el.remove(), 2500); 
+  }
+
+  function sum(arr, fn){ return arr.reduce((a,x)=>a+fn(x),0); }
+
+  // Render principal
+  function render(){
+    const dateStr = $('day').value;
+    const d = dayData(dateStr);
+    const sales = sum(d.sales, x => x.qty * x.price);
+    const expenses = sum(d.expenses, x => x.amount);
+    const profit = sales - expenses;
+
+    // Métricas del Día
+    $('salesTotal').textContent = crc(sales);
+    $('expensesTotal').textContent = crc(expenses);
+    $('profitTotal').textContent = crc(profit);
+    $('salesCount').textContent = d.sales.length;
+
+    $('salesListCount').textContent = d.sales.length + ' registro' + (d.sales.length === 1 ? '' : 's');
+    $('expenseListCount').textContent = d.expenses.length + ' registro' + (d.expenses.length === 1 ? '' : 's');
+    $('expenseFooterTotal').textContent = crc(expenses);
+
+    // Barra de Meta
+    const dailyGoal = db.goals[dateStr] || 20000;
+    const progress = Math.min(100, Math.round((sales / dailyGoal) * 100));
+    $('goalProgressBar').style.width = progress + '%';
+    $('goalProgressText').textContent = `${progress}% completado (${crc(sales)})`;
+    $('goalTargetText').textContent = `Meta: ${crc(dailyGoal)}`;
+
+    // Lista de Ventas
+    if(d.sales.length) {
+      $('salesList').innerHTML = d.sales.map((x, i) => `
+        <div class="bg-gray-50 border border-gray-200 rounded-xl p-3 flex justify-between items-center text-xs">
+          <div>
+            <div class="font-bold text-gray-800 text-sm">${escapeHtml(x.product)}</div>
+            <div class="text-gray-500 mt-0.5">${x.qty} × ${crc(x.price)} ${x.note ? ' · <span class="italic text-gray-600">'+escapeHtml(x.note)+'</span>' : ''}</div>
+          </div>
+          <div class="text-right">
+            <div class="font-extrabold text-emerald-800 text-sm">${crc(x.qty * x.price)}</div>
+            <div class="flex gap-1.5 mt-1 justify-end">
+              <button type="button" onclick="openEditSale(${i})" class="text-emerald-700 hover:text-emerald-900 font-semibold px-1.5 py-0.5 bg-emerald-50 rounded">Editar</button>
+              <button type="button" onclick="confirmDeleteSale(${i})" class="text-rose-600 hover:text-rose-800 font-semibold px-1.5 py-0.5 bg-rose-50 rounded">Eliminar</button>
+            </div>
+          </div>
+        </div>
+      `).join('');
+    } else {
+      $('salesList').innerHTML = '<div class="text-center py-6 text-xs text-gray-400">Todavía no hay ventas registradas en esta fecha.</div>';
+    }
+
+    // Lista de Gastos
+    if(d.expenses.length) {
+      $('expensesList').innerHTML = d.expenses.map((x, i) => `
+        <div class="bg-gray-50 border border-gray-200 rounded-xl p-3 flex justify-between items-center text-xs">
+          <div>
+            <div class="font-bold text-gray-800 text-sm">${escapeHtml(x.name)}</div>
+            <div class="text-gray-400 mt-0.5">Gasto registrado</div>
+          </div>
+          <div class="text-right">
+            <div class="font-extrabold text-rose-700 text-sm">${crc(x.amount)}</div>
+            <div class="flex gap-1.5 mt-1 justify-end">
+              <button type="button" onclick="openEditExpense(${i})" class="text-emerald-700 hover:text-emerald-900 font-semibold px-1.5 py-0.5 bg-emerald-50 rounded">Editar</button>
+              <button type="button" onclick="confirmDeleteExpense(${i})" class="text-rose-600 hover:text-rose-800 font-semibold px-1.5 py-0.5 bg-rose-50 rounded">Eliminar</button>
+            </div>
+          </div>
+        </div>
+      `).join('');
+    } else {
+      $('expensesList').innerHTML = '<div class="text-center py-6 text-xs text-gray-400">Todavía no hay gastos registrados en esta fecha.</div>';
+    }
+
+    renderMonthlyView();
+  }
+
+  // Render Resumen Mensual
+  function renderMonthlyView() {
+    const selectedMonth = $('monthPicker').value || getLocalDateString().slice(0, 7);
+    $('monthPicker').value = selectedMonth;
+
+    let totalSales = 0;
+    let totalExpenses = 0;
+    const daysMarkup = [];
+
+    Object.keys(db).sort().reverse().forEach(date => {
+      if(date.startsWith(selectedMonth) && date !== 'goals') {
+        const d = db[date];
+        const sales = sum(d.sales, x => x.qty * x.price);
+        const expenses = sum(d.expenses, x => x.amount);
+        const profit = sales - expenses;
+
+        totalSales += sales;
+        totalExpenses += expenses;
+
+        if(sales > 0 || expenses > 0) {
+          daysMarkup.push(`
+            <div class="flex justify-between items-center p-2.5 bg-gray-50 rounded-xl border border-gray-100 text-xs">
+              <span class="font-bold text-gray-700">${date}</span>
+              <div class="flex gap-3 text-right">
+                <span class="text-gray-600">V: <strong class="text-gray-800">${crc(sales)}</strong></span>
+                <span class="text-gray-600">G: <strong class="text-rose-600">${crc(expenses)}</strong></span>
+                <span class="font-bold text-emerald-800">${crc(profit)}</span>
+              </div>
+            </div>
+          `);
+        }
+      }
+    });
+
+    $('monthSalesTotal').textContent = crc(totalSales);
+    $('monthExpensesTotal').textContent = crc(totalExpenses);
+    $('monthProfitTotal').textContent = crc(totalSales - totalExpenses);
+
+    $('monthlyBreakdown').innerHTML = daysMarkup.length ? daysMarkup.join('') : '<div class="text-center py-6 text-xs text-gray-400">No hay movimientos guardados en este mes.</div>';
+  }
+
+  // Handlers para Navegación de Fecha
+  function shiftDay(offset) {
+    const current = new Date($('day').value + 'T00:00:00');
+    current.setDate(current.getDate() + offset);
+    $('day').value = getLocalDateString(current);
+    render();
+  }
+
+  $('prevDayBtn').addEventListener('click', () => shiftDay(-1));
+  $('nextDayBtn').addEventListener('click', () => shiftDay(1));
+  $('todayBtn').addEventListener('click', () => { $('day').value = getLocalDateString(); render(); });
+  $('day').addEventListener('change', render);
+  $('monthPicker').addEventListener('change', renderMonthlyView);
+
+  // Registro de Ventas
+  $('saleForm').addEventListener('submit', e => {
+    e.preventDefault();
+    const product = $('saleProduct').value.trim();
+    const qty = Number($('saleQty').value);
+    const price = Number($('salePrice').value);
+    const note = $('saleNote').value.trim();
+
+    if(!product || qty < 1 || price < 0) return toast('Revisa los datos de la venta.');
+
+    dayData().sales.push({ product, qty, price, note });
+    save();
+    render();
+
+    $('saleForm').reset();
+    $('saleQty').value = 1;
+    $('saleProduct').focus();
+    toast('Venta guardada exitosamente.');
+  });
+
+  // Registro de Gastos
+  $('expenseForm').addEventListener('submit', e => {
+    e.preventDefault();
+    const name = $('expenseName').value.trim();
+    const amount = Number($('expenseAmount').value);
+
+    if(!name || amount <= 0) return toast('Revisa los datos del gasto.');
+
+    dayData().expenses.push({ name, amount });
+    save();
+    render();
+
+    $('expenseForm').reset();
+    toast('Gasto guardado exitosamente.');
+  });
+
+  // Configurar Meta
+  $('setGoalBtn').addEventListener('click', () => {
+    const currentGoal = db.goals[$('day').value] || 20000;
+    const newGoal = prompt('Ingresa la meta de ventas para este día (₡):', currentGoal);
+    if(newGoal !== null && !isNaN(newGoal) && Number(newGoal) > 0) {
+      db.goals[$('day').value] = Number(newGoal);
+      save();
+      render();
+      toast('Meta actualizada.');
+    }
+  });
+
+  // Modales
+  window.closeModal = function(id) {
+    $(id).classList.add('hidden');
+  };
+
+  // Edición de Venta
+  window.openEditSale = function(index) {
+    const item = dayData().sales[index];
+    $('editSaleIndex').value = index;
+    $('editSaleProduct').value = item.product;
+    $('editSaleQty').value = item.qty;
+    $('editSalePrice').value = item.price;
+    $('editSaleNote').value = item.note || '';
+    $('editSaleModal').classList.remove('hidden');
+  };
+
+  $('editSaleForm').addEventListener('submit', e => {
+    e.preventDefault();
+    const idx = Number($('editSaleIndex').value);
+    dayData().sales[idx] = {
+      product: $('editSaleProduct').value.trim(),
+      qty: Number($('editSaleQty').value),
+      price: Number($('editSalePrice').value),
+      note: $('editSaleNote').value.trim()
+    };
+    save();
+    render();
+    closeModal('editSaleModal');
+    toast('Venta actualizada.');
+  });
+
+  // Edición de Gasto
+  window.openEditExpense = function(index) {
+    const item = dayData().expenses[index];
+    $('editExpenseIndex').value = index;
+    $('editExpenseName').value = item.name;
+    $('editExpenseAmount').value = item.amount;
+    $('editExpenseModal').classList.remove('hidden');
+  };
+
+  $('editExpenseForm').addEventListener('submit', e => {
+    e.preventDefault();
+    const idx = Number($('editExpenseIndex').value);
+    dayData().expenses[idx] = {
+      name: $('editExpenseName').value.trim(),
+      amount: Number($('editExpenseAmount').value)
+    };
+    save();
+    render();
+    closeModal('editExpenseModal');
+    toast('Gasto actualizado.');
+  });
+
+  // Confirmaciones de Eliminación
+  let onConfirmAction = null;
+
+  function showConfirm(title, msg, onConfirm) {
+    $('confirmTitle').textContent = title;
+    $('confirmMsg').textContent = msg;
+    onConfirmAction = onConfirm;
+    $('confirmModal').classList.remove('hidden');
+  }
+
+  $('confirmCancelBtn').addEventListener('click', () => closeModal('confirmModal'));
+  $('confirmOkBtn').addEventListener('click', () => {
+    if(onConfirmAction) onConfirmAction();
+    closeModal('confirmModal');
+  });
+
+  window.confirmDeleteSale = function(index) {
+    showConfirm('¿Eliminar venta?', 'Esta venta se eliminará del registro diario.', () => {
+      dayData().sales.splice(index, 1);
+      save();
+      render();
+      toast('Venta eliminada.');
+    });
+  };
+
+  window.confirmDeleteExpense = function(index) {
+    showConfirm('¿Eliminar gasto?', 'Este gasto se eliminará del registro diario.', () => {
+      dayData().expenses.splice(index, 1);
+      save();
+      render();
+      toast('Gasto eliminado.');
+    });
+  };
+
+  $('clearDayBtn').addEventListener('click', () => {
+    showConfirm('¿Borrar día completo?', `Se borrarán todos los registros de ${$('day').value}.`, () => {
+      db[$('day').value] = { sales: [], expenses: [] };
+      save();
+      render();
+      toast('Registros de la fecha despejados.');
+    });
+  });
+
+  // Exportar reporte CSV
+  function csvCell(v){ return '"' + String(v).replace(/"/g, '""') + '"'; }
+
+  $('exportBtn').addEventListener('click', () => {
+    const d = dayData();
+    const date = $('day').value;
+    const rows = [
+      ['Reporte Frutik de Loto', date],
+      [],
+      ['VENTAS'],
+      ['Producto', 'Cantidad', 'Precio Unitario', 'Total', 'Nota'],
+      ...d.sales.map(x => [x.product, x.qty, x.price, x.qty * x.price, x.note || '']),
+      [],
+      ['GASTOS'],
+      ['Concepto', 'Monto'],
+      ...d.expenses.map(x => [x.name, x.amount]),
+      [],
+      ['RESUMEN'],
+      ['Total Ventas', sum(d.sales, x => x.qty * x.price)],
+      ['Total Gastos', sum(d.expenses, x => x.amount)],
+      ['Ganancia Estimada', sum(d.sales, x => x.qty * x.price) - sum(d.expenses, x => x.amount)]
+    ];
+
+    const csv = '\ufeff' + rows.map(r => r.map(csvCell).join(';')).join('\r\n');
+    const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = `frutik-loto-${date}.csv`;
+    a.click();
+    URL.revokeObjectURL(url);
+  });
+
+  // Compartir Resumen
+  $('shareBtn').addEventListener('click', async () => {
+    const d = dayData();
+    const sales = sum(d.sales, x => x.qty * x.price);
+    const expenses = sum(d.expenses, x => x.amount);
+    const msg = `🍉 *Frutik de Loto* · ${$('day').value}\n` +
+                `---------------------------\n` +
+                `📈 Ventas: ${crc(sales)}\n` +
+                `📉 Gastos: ${crc(expenses)}\n` +
+                `💰 Ganancia Neto: ${crc(sales - expenses)}\n` +
+                `🧾 Nº Ventas: ${d.sales.length}`;
+
+    try {
+      if(navigator.share) {
+        await navigator.share({ title: 'Cierre diario Frutik de Loto', text: msg });
+      } else {
+        document.execCommand('copy');
+        toast('Resumen copiado al portapapeles.');
+      }
+    } catch(e) {
+      toast('Resumen copiado.');
+    }
+  });
+
+  // Cambio de pestañas
+  $('tabDaily').addEventListener('click', () => {
+    $('dailyView').classList.remove('hidden');
+    $('monthlyView').classList.add('hidden');
+    $('tabDaily').className = "flex-1 py-2 text-center text-xs font-bold rounded-lg bg-emerald-700 text-white transition";
+    $('tabMonthly').className = "flex-1 py-2 text-center text-xs font-semibold text-gray-600 hover:text-emerald-800 rounded-lg transition";
+  });
+
+  $('tabMonthly').addEventListener('click', () => {
+    $('dailyView').classList.add('hidden');
+    $('monthlyView').classList.remove('hidden');
+    $('tabMonthly').className = "flex-1 py-2 text-center text-xs font-bold rounded-lg bg-emerald-700 text-white transition";
+    $('tabDaily').className = "flex-1 py-2 text-center text-xs font-semibold text-gray-600 hover:text-emerald-800 rounded-lg transition";
+    renderMonthlyView();
+  });
+
+  // Inicialización
+  render();
+})();
+</script>
+</body>
+</html>
